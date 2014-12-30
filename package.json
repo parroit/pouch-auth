@@ -1,0 +1,31 @@
+{
+  "name": "pouch-auth",
+  "version": "0.0.1",
+  "description": "auth plugin for pouch that work in node",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha *_test.js --reporter spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/parroit/pouch-auth.git"
+  },
+  "keywords": [
+    "pouch",
+    "plugin",
+    "auth",
+    "login",
+    "user"
+  ],
+  "author": "Andrea Parodi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/parroit/pouch-auth/issues"
+  },
+  "homepage": "https://github.com/parroit/pouch-auth",
+  "devDependencies": {
+    "chai": "^1.10.0",
+    "mocha": "^2.1.0",
+    "pouchdb": "^3.2.0"
+  }
+}
