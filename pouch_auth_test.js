@@ -1,6 +1,9 @@
 'use strict';
 
-require('chai').should();
+var chai =require('chai');
+var expect = chai.expect;
+chai.should();
+
 
 var pouchAuth = require('./index');
 var PouchDB = require('pouchdb');
@@ -29,6 +32,26 @@ describe('pouchAuth', function() {
 
         it('attach a login method to each db', function() {
             remote.login.should.be.a('function');
+            local.login.should.be.a('function');
+        });
+
+        it('attach a logout method to each db', function() {
+            remote.logout.should.be.a('function');
+            local.logout.should.be.a('function');
+        });
+
+         it('login method is not available on local dbs', function() {
+            expect(function(){
+                local.login();
+                remote.login();
+            }).to.throws(TypeError);
+        });
+
+
+         it('logout method is not available on local dbs', function() {
+            expect(function(){
+                local.logout();
+            }).to.throws(TypeError);
         });
     });
 });
