@@ -10,7 +10,7 @@ var PouchDB = require('pouchdb');
 //PouchDB.debug.enable('*');
 
 describe('pouchAuth', function() {
-    this.timeout(10000);
+    this.timeout(100000);
 
     it('is defined', function() {
         pouchAuth.should.be.a('object');
@@ -61,10 +61,16 @@ describe('pouchAuth', function() {
             }).to.throws(TypeError);
         });
 
+        it('logout method is not available on non loggedin dbs', function() {
+            expect(function() {
+                remote.logout();
+            }).to.throws(Error);
+        });
+
         it('allow to login to remote instances', function(done) {
             remote.login(remoteUser, remotePassword)
                 .then(function(loggedRemote) {
-                    
+
 
                     loggedRemote.allDocs({
                             limit: 1
@@ -76,6 +82,26 @@ describe('pouchAuth', function() {
                         .catch(function(err) {
                             done(new Error(err.message));
                         });
+
+                })
+                .catch(done);
+
+        });
+
+        it('loggedin remote instances can sync', function(done) {
+            remote.login(remoteUser, remotePassword)
+                .then(function(loggedRemote) {
+                    var sync = local.sync(loggedRemote, {
+                        live: false
+                    });
+ 
+                    sync.on('complete', function(info) {
+                        info.push.ok.should.equal(true);
+                        info.pull.ok.should.equal(true);
+                        done();
+                    }).on('error', function(err) {
+                        done(err);
+                    });
 
                 })
                 .catch(done);

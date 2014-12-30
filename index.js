@@ -16,8 +16,9 @@ module.exports = {
         remoteDbOnly(this);
 
         var pouch = this;
-        var Promise = pouch.constructor.utils.Promise;
-        var request = pouch.constructor.utils.ajax;
+        var utils = pouch.constructor.utils;
+        var Promise = utils.Promise;
+        var request = utils.ajax;
         var pos = pouch._db_name.lastIndexOf('/');
         var url = pouch._db_name.slice(0, pos) + '/_session';
 
@@ -31,11 +32,11 @@ module.exports = {
         }, pouch.__opts.ajax);
 
 
-       
+
 
         return new Promise(function(resolve, reject) {
             request(options, function(error, body, response) {
-                
+
                 if (error) {
                     return reject(new Error(error.status + ': ' + error.message));
                 }
@@ -44,13 +45,13 @@ module.exports = {
                     return new Error('response status:' + response.statusCode);
                 }
 
-                var opts = pouch.constructor.utils.clone(pouch.__opts);
+                var opts = utils.clone(pouch.__opts);
 
-                //opts.ajax = opts.ajax || {};
+                console.dir(body);
                 opts.headers = opts.headers || {};
                 opts.headers.cookie = response.headers['set-cookie'][0];
 
-                var newDb = new pouch.constructor(pouch._db_name,opts);
+                var newDb = new pouch.constructor(pouch._db_name, opts);
                 newDb.then(resolve).catch(reject);
             });
         });
