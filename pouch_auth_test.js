@@ -7,9 +7,11 @@ chai.should();
 
 var pouchAuth = require('./index');
 var PouchDB = require('pouchdb');
-PouchDB.debug.enable('*');
+//PouchDB.debug.enable('*');
 
 describe('pouchAuth', function() {
+    this.timeout(10000);
+
     it('is defined', function() {
         pouchAuth.should.be.a('object');
     });
@@ -48,7 +50,6 @@ describe('pouchAuth', function() {
 
         it('login method is not available on local dbs', function() {
             expect(function() {
-                remote.login();
                 local.login();
 
             }).to.throws(TypeError);
@@ -60,19 +61,21 @@ describe('pouchAuth', function() {
             }).to.throws(TypeError);
         });
 
-        it.only('allow to login to remote instances', function(done) {
+        it('allow to login to remote instances', function(done) {
             remote.login(remoteUser, remotePassword)
-                .then(function() {
-                    remote.allDocs({
+                .then(function(loggedRemote) {
+                    
+
+                    loggedRemote.allDocs({
                             limit: 1
-                    })
-                    .then(function(doc) {
-                        console.dir(doc);
-                        done();
-                    })
-                    .catch(function(err) {
-                        done(new Error(err.message));
-                    });
+                        })
+                        .then(function(doc) {
+                            doc.rows.should.be.an('array');
+                            done();
+                        })
+                        .catch(function(err) {
+                            done(new Error(err.message));
+                        });
 
                 })
                 .catch(done);

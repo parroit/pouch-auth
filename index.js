@@ -1,6 +1,5 @@
 'use strict';
 
-var querystring = require('querystring');
 var assign = require('object-assign');
 
 function remoteDbOnly(pouch) {
@@ -28,16 +27,11 @@ module.exports = {
             form: {
                 name: user,
                 password: password
-            },
-            headers: {
-                Accept: 'application/json'
             }
         }, pouch.__opts.ajax);
 
 
-
-        //console.dir(pouch.constructor)
-        //console.dir(options)
+       
 
         return new Promise(function(resolve, reject) {
             request(options, function(error, body, response) {
@@ -50,15 +44,14 @@ module.exports = {
                     return new Error('response status:' + response.statusCode);
                 }
 
-                var opts = pouch.__opts.ajax = pouch.__opts.ajax || {};
-                var headers = opts.headers || {};
-                
-                pouch.__opts.ajax.headers = assign(headers, {
-                    cookie: response.headers['set-cookie'][0]
-                });
+                var opts = pouch.constructor.utils.clone(pouch.__opts);
 
-                console.dir(pouch.__opts.ajax);
-                resolve();
+                //opts.ajax = opts.ajax || {};
+                opts.headers = opts.headers || {};
+                opts.headers.cookie = response.headers['set-cookie'][0];
+
+                var newDb = new pouch.constructor(pouch._db_name,opts);
+                newDb.then(resolve).catch(reject);
             });
         });
 
