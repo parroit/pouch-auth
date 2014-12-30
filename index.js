@@ -10,6 +10,15 @@ function remoteDbOnly(pouch) {
 
 }
 
+
+function loggedDbOnly(pouch) {
+
+    if (!pouch.user) {
+        throw new Error('This database was never authenticated.');
+    }
+
+}
+
 module.exports = {
 
     login: function(user, password) {
@@ -47,11 +56,17 @@ module.exports = {
 
                 var opts = utils.clone(pouch.__opts);
 
-                console.dir(body);
                 opts.headers = opts.headers || {};
                 opts.headers.cookie = response.headers['set-cookie'][0];
 
                 var newDb = new pouch.constructor(pouch._db_name, opts);
+                var userId = 'org.couchdb.user:' + user;
+                newDb.user = {
+                    name: user,
+                    roles: body.roles || [],
+                    type: 'user',
+                    _id: userId
+                };
                 newDb.then(resolve).catch(reject);
             });
         });
@@ -62,6 +77,7 @@ module.exports = {
         var pouch = this;
 
         remoteDbOnly(pouch);
+        loggedDbOnly(pouch);
 
     }
 };
