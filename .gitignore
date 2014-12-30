@@ -1,3 +1,4 @@
 node_modules
 test_assets
+*.sublime-workspace
 *.log
